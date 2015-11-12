@@ -9,8 +9,11 @@ module.exports = (grunt) ->
                     join: true
                 files: [ 'dev/app.js': 'dev/*.coffee']
         watch:
-            html:
-                files: ['*.html']
+            options:
+                livereload: true
+                
+            php:
+                files: ['*.php']
             coffee:
                 files: ['dev/*.coffee']
                 tasks: ['coffee']
