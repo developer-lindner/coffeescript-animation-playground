@@ -1,5 +1,5 @@
 class Ball
-    constructor:(radius, color, @context) ->
+    constructor:(radius, color) ->
         @utils = new Utils
 
         if radius is undefined
@@ -19,10 +19,7 @@ class Ball
         @color = @utils.parseColor(color)
 
 
-    setUpAndStart: =>
-        @draw()
-
-    draw: =>
+    draw: (@context) =>
         @context.save()
         @context.translate @x, @y
         @context.rotate @rotation

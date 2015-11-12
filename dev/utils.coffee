@@ -14,8 +14,7 @@ class Utils
         element_scrollLeft = document.documentElement.scrollLeft
         offsetTop = element.offsetTop
         offsetLeft = element.offsetLeft
-
-
+        
         element.addEventListener 'mousemove', (event) ->
 
             if event.pageX || event.pageY

@@ -3,21 +3,21 @@
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   $(function() {
-    var canvas, context, currentVis, visuals;
-    canvas = $("#canvas")[0];
+    var canvas, context, currentVis, form, i, len, visual, visuals;
+    canvas = $(".canvas")[0];
     canvas.height = window.innerHeight;
     canvas.width = window.innerWidth;
     context = canvas.getContext('2d');
-    currentVis = 1;
+    currentVis = 0;
     visuals = [
       {
         id: 0,
         name: "Animation 1",
-        fn: new Line(canvas, context)
+        fn: new Fountain(canvas, context)
       }, {
         id: 1,
         name: "Animation 2",
-        fn: new Fountain(canvas, context)
+        fn: new Line(canvas, context)
       }
     ];
     $(window).on("resize", function() {
@@ -25,14 +25,23 @@
       canvas.width = window.innerWidth;
       return visuals[currentVis].fn.canvasResized(canvas);
     });
+    form = $(".controls form");
+    form.prepend("<div class=\"form-group\">\n    <select class=\"form-control\"></select>\n</form>");
+    for (i = 0, len = visuals.length; i < len; i++) {
+      visual = visuals[i];
+      form.find("select").append("<option value=" + visual.id + ">" + visual.name + "</option>");
+    }
+    form.find("select").change(function(e) {
+      visuals[currentVis].fn.tearDown();
+      currentVis = form.find("select").val();
+      return visuals[currentVis].fn.setUpAndStart();
+    });
     return visuals[currentVis].fn.setUpAndStart();
   });
 
   Ball = (function() {
-    function Ball(radius, color, context1) {
-      this.context = context1;
+    function Ball(radius, color) {
       this.draw = bind(this.draw, this);
-      this.setUpAndStart = bind(this.setUpAndStart, this);
       this.utils = new Utils;
       if (radius === void 0) {
         radius = 40;
@@ -51,11 +60,8 @@
       this.color = this.utils.parseColor(color);
     }
 
-    Ball.prototype.setUpAndStart = function() {
-      return this.draw();
-    };
-
-    Ball.prototype.draw = function() {
+    Ball.prototype.draw = function(context1) {
+      this.context = context1;
       this.context.save();
       this.context.translate(this.x, this.y);
       this.context.rotate(this.rotation);
@@ -74,14 +80,24 @@
 
   Fountain = (function() {
     function Fountain(canvas1, context1) {
+      var ball, i, num, ref;
       this.canvas = canvas1;
       this.context = context1;
-      this.canvasResized = bind(this.canvasResized, this);
       this.tearDown = bind(this.tearDown, this);
       this.draw = bind(this.draw, this);
       this.setUpAndStart = bind(this.setUpAndStart, this);
       this.utils = new Utils;
-      this.mouse = this.utils.captureMouse(this.canvas);
+      this.numBalls = 80;
+      this.gravity = 0.5;
+      this.balls = [];
+      for (num = i = 0, ref = this.numBalls; 0 <= ref ? i < ref : i > ref; num = 0 <= ref ? ++i : --i) {
+        ball = new Ball(2, Math.random() * 0xffffff);
+        ball.x = this.canvas.width / 2;
+        ball.y = this.canvas.height;
+        ball.vx = Math.random() * 2 - 1;
+        ball.vy = Math.random() * -10 - 10;
+        this.balls.push(ball);
+      }
     }
 
     Fountain.prototype.setUpAndStart = function() {
@@ -90,15 +106,25 @@
 
     Fountain.prototype.draw = function() {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      _.forEach(this.balls, (function(_this) {
+        return function(ball) {
+          ball.vy += _this.gravity;
+          ball.x += ball.vx;
+          ball.y += ball.vy;
+          if (ball.x - ball.radius > _this.canvas.width || ball.x + ball.radius < 0 || ball.y - ball.radius > _this.canvas.height || ball.y + ball.radius < 0) {
+            ball.x = _this.canvas.width / 2;
+            ball.y = _this.canvas.height;
+            ball.vx = Math.random() * 2 - 1;
+            ball.vy = Math.random() * -10 - 10;
+          }
+          return ball.draw(_this.context);
+        };
+      })(this));
       return this.rafId = requestAnimationFrame(this.draw);
     };
 
     Fountain.prototype.tearDown = function() {
       return window.cancelAnimationFrame(this.rafId);
-    };
-
-    Fountain.prototype.canvasResized = function(canvas1) {
-      this.canvas = canvas1;
     };
 
     return Fountain;
