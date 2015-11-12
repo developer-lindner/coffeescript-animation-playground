@@ -1,0 +1,14 @@
+{
+  "name": "coffee-time",
+  "version": "1.0.0",
+  "description": "CoffeeScript HTML5 Animation Playground",
+  "author": "Thomas Lindner <info@aqio.de>",
+  "devDependencies":{
+  	"glob": "~3.2.8",
+  	"grunt": "^0.4.5",
+  	"grunt-contrib-coffee": "^0.13.0",
+  	"grunt-notify": "^0.4.1",
+  	"grunt-contrib-watch": "^0.6.1",
+  	"load-grunt-tasks": "^3.2.0"
+  }
+}
