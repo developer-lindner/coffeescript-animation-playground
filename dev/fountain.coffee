@@ -38,10 +38,8 @@ class Fountain
                     ball.vx = Math.random() * 2 - 1
                     ball.vy = Math.random() * - 10 -10
 
-            if (@mouse.x >= ball.x && @mouse.x <= ball.x + ball.radius ||
-                @mouse.y <= ball.y && @mouse.y >= ball.y + ball.radius)
-                    ball.scaleX += 1
-                    ball.scaleY += 1
+            if (@utils.containsPoint ball.getBounds(), @mouse.x, @mouse.y)
+                    ball.radius += 0.5
 
             ball.draw(@context)
 

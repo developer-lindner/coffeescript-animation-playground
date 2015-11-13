@@ -41,6 +41,7 @@
 
   Ball = (function() {
     function Ball(radius, color) {
+      this.getBounds = bind(this.getBounds, this);
       this.draw = bind(this.draw, this);
       this.utils = new Utils;
       if (radius === void 0) {
@@ -72,6 +73,15 @@
       this.context.closePath();
       this.context.fill();
       return this.context.restore();
+    };
+
+    Ball.prototype.getBounds = function() {
+      return {
+        x: this.x - this.radius,
+        y: this.y - this.radius,
+        width: this.radius * 2,
+        height: this.radius * 2
+      };
     };
 
     return Ball;
@@ -120,9 +130,8 @@
           ball.vx = Math.random() * 2 - 1;
           ball.vy = Math.random() * -10 - 10;
         }
-        if (this.mouse.x >= ball.x && this.mouse.x <= ball.x + ball.radius || this.mouse.y <= ball.y && this.mouse.y >= ball.y + ball.radius) {
-          ball.scaleX += 1;
-          ball.scaleY += 1;
+        if (this.utils.containsPoint(ball.getBounds(), this.mouse.x, this.mouse.y)) {
+          ball.radius += 0.5;
         }
         ball.draw(this.context);
       }
@@ -191,6 +200,7 @@
 
   Utils = (function() {
     function Utils() {
+      this.containsPoint = bind(this.containsPoint, this);
       this.parseColor = bind(this.parseColor, this);
       this.captureMouse = bind(this.captureMouse, this);
     }
@@ -239,6 +249,10 @@
         }
         return color;
       }
+    };
+
+    Utils.prototype.containsPoint = function(rect, x, y) {
+      return !(x < rect.x || x > rect.x + rect.width || y < rect.y || y > rect.y + rect.height);
     };
 
     return Utils;

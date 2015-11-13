@@ -30,6 +30,7 @@ class Utils
             mouse.event = event
         mouse
 
+
     parseColor: (color, toNumber) =>
         if toNumber is true
             if typeof color is 'number'
@@ -41,3 +42,10 @@ class Utils
             if typeof color is 'number'
                 color = '#' + ('00000' + (color | 0).toString(16)).substr(-6)
             color
+
+
+    containsPoint: (rect, x, y) =>
+        !(x < rect.x ||
+           x > rect.x + rect.width ||
+           y < rect.y ||
+           y > rect.y + rect.height)
