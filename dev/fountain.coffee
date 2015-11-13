@@ -1,6 +1,8 @@
 class Fountain
     constructor:(@canvas, @context) ->
         @utils = new Utils
+        @mouse = @utils.captureMouse(@canvas)
+
         @numBalls = 80
         @gravity = 0.5
         @balls = []
@@ -21,9 +23,9 @@ class Fountain
     draw: =>
         @context.clearRect 0, 0, @canvas.width, @canvas.height
 
-        _.forEach @balls, (ball) =>
+        for ball in @balls
             ball.vy += @gravity
-            ball.x += ball.vx
+            ball.x += ball.vx * 5
             ball.y += ball.vy
 
             if (ball.x - ball.radius > @canvas.width ||
@@ -35,6 +37,12 @@ class Fountain
                     ball.y = @canvas.height
                     ball.vx = Math.random() * 2 - 1
                     ball.vy = Math.random() * - 10 -10
+
+            if (@mouse.x >= ball.x && @mouse.x <= ball.x + ball.radius ||
+                @mouse.y <= ball.y && @mouse.y >= ball.y + ball.radius)
+                    ball.scaleX += 1
+                    ball.scaleY += 1
+
             ball.draw(@context)
 
         @rafId = requestAnimationFrame @draw

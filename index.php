@@ -27,7 +27,6 @@
     </div>
 	<canvas class="canvas"></canvas>
     <script src="libs/jquery.js"></script>
-    <script src="libs/lodash.min.js"></script>
     <script src="dev/app.js"></script>
 </body>
 </html>

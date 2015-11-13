@@ -87,6 +87,7 @@
       this.draw = bind(this.draw, this);
       this.setUpAndStart = bind(this.setUpAndStart, this);
       this.utils = new Utils;
+      this.mouse = this.utils.captureMouse(this.canvas);
       this.numBalls = 80;
       this.gravity = 0.5;
       this.balls = [];
@@ -105,21 +106,26 @@
     };
 
     Fountain.prototype.draw = function() {
+      var ball, i, len, ref;
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      _.forEach(this.balls, (function(_this) {
-        return function(ball) {
-          ball.vy += _this.gravity;
-          ball.x += ball.vx;
-          ball.y += ball.vy;
-          if (ball.x - ball.radius > _this.canvas.width || ball.x + ball.radius < 0 || ball.y - ball.radius > _this.canvas.height || ball.y + ball.radius < 0) {
-            ball.x = _this.canvas.width / 2;
-            ball.y = _this.canvas.height;
-            ball.vx = Math.random() * 2 - 1;
-            ball.vy = Math.random() * -10 - 10;
-          }
-          return ball.draw(_this.context);
-        };
-      })(this));
+      ref = this.balls;
+      for (i = 0, len = ref.length; i < len; i++) {
+        ball = ref[i];
+        ball.vy += this.gravity;
+        ball.x += ball.vx * 5;
+        ball.y += ball.vy;
+        if (ball.x - ball.radius > this.canvas.width || ball.x + ball.radius < 0 || ball.y - ball.radius > this.canvas.height || ball.y + ball.radius < 0) {
+          ball.x = this.canvas.width / 2;
+          ball.y = this.canvas.height;
+          ball.vx = Math.random() * 2 - 1;
+          ball.vy = Math.random() * -10 - 10;
+        }
+        if (this.mouse.x >= ball.x && this.mouse.x <= ball.x + ball.radius || this.mouse.y <= ball.y && this.mouse.y >= ball.y + ball.radius) {
+          ball.scaleX += 1;
+          ball.scaleY += 1;
+        }
+        ball.draw(this.context);
+      }
       return this.rafId = requestAnimationFrame(this.draw);
     };
 
